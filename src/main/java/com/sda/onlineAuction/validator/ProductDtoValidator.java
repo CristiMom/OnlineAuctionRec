@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 @Service
 public class ProductDtoValidator {
 
+
     public void validate(ProductDto productDto, BindingResult bindingResult) {
         String priceAsString = productDto.getStartBiddingPrice();
         try {
@@ -20,7 +21,6 @@ public class ProductDtoValidator {
             FieldError fieldError = new FieldError("productDto", "startBiddingPrice", "The price must be a number");
             bindingResult.addError(fieldError);
         }
-
     }
 
     // o varianta mai concentrata a metodei de mai sus
