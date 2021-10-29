@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,4 +21,7 @@ public class Product {
     private LocalDateTime endDateTime;
     @Lob
     private byte[] image;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    private List<Bid> bidsList;
 }

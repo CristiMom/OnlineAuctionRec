@@ -24,6 +24,7 @@
             <div class="controls">
                 <input type="text" id="email" th:field="*{email}"  placeholder="email" class="input-xlarge">
                 <p class="help-block"></p>
+                <label th:if="${#fields.hasErrors('email')}" th:class="'error'" th:errors="*{email }" class="col-lg-4 control-label" style="color:red;" ></label>
             </div>
         </div>
 

@@ -40,9 +40,9 @@ public class ProductService {
 
     public List<ProductDto> getAllProductDtosWithStream() {
         List<Product> productList = productRepository.findAll();
-      return productList.stream()
-              .map(productMapper::map)
-              .collect(Collectors.toList());
+        return productList.stream()
+                .map(productMapper::map)
+                .collect(Collectors.toList());
     }
 
     public Optional<ProductDto> getProductDtoById(String productId) {

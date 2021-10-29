@@ -1,6 +1,7 @@
 package com.sda.onlineAuction.mapper;
 
 import com.sda.onlineAuction.dto.ProductDto;
+import com.sda.onlineAuction.model.Bid;
 import com.sda.onlineAuction.model.Category;
 import com.sda.onlineAuction.model.Product;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Service
 public class ProductMapper {
 
-    public Product map(ProductDto productDto, MultipartFile multipartFile){
+    public Product map(ProductDto productDto, MultipartFile multipartFile) {
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
@@ -28,7 +29,7 @@ public class ProductMapper {
         return product;
     }
 
-    public ProductDto map(Product product){
+    public ProductDto map(Product product) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId().toString());
         productDto.setName(product.getName());
@@ -39,6 +40,14 @@ public class ProductMapper {
 
         String imageAsString = Base64.encodeBase64String(product.getImage());
         productDto.setImage(imageAsString);
+
+        Integer max = 0;
+        for (Bid bid : product.getBidsList()) {
+            if (max < bid.getValue()) {
+                max = bid.getValue();
+            }
+        }
+        productDto.setCurentBidPrice(max.toString());
 
         return productDto;
     }

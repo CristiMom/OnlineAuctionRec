@@ -1,12 +1,16 @@
 package com.sda.onlineAuction.controller;
 
+import com.sda.onlineAuction.dto.BidDto;
 import com.sda.onlineAuction.dto.ProductDto;
 import com.sda.onlineAuction.dto.UserDto;
+import com.sda.onlineAuction.service.BidService;
 import com.sda.onlineAuction.service.ProductService;
 import com.sda.onlineAuction.service.UserService;
+import com.sda.onlineAuction.validator.BidDtoValidator;
 import com.sda.onlineAuction.validator.ProductDtoValidator;
 import com.sda.onlineAuction.validator.UserDtoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +38,12 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BidService bidService;
+
+    @Autowired
+    private BidDtoValidator bidDtoValidator;
+
     @GetMapping("/addItem")
     public String getAddItemPage(Model model) {
         // aici procesez din greu requestul, la final:
@@ -54,7 +64,7 @@ public class HomeController {
         return "redirect:/addItem";
     }
 
-    @GetMapping("/home")
+    @GetMapping({"/home", "/"})
     public String getHomePage(Model model) {
         List<ProductDto> productDtoList = productService.getAllProductDtos();
         model.addAttribute("products", productDtoList);
@@ -71,7 +81,28 @@ public class HomeController {
         }
         ProductDto productDto = optionalProductDto.get();
         model.addAttribute("product", productDto);
+        BidDto bidDto = new BidDto();
+        model.addAttribute("bidDto", bidDto);
         return "viewItem";
+    }
+
+    @PostMapping("/item/{productId}")
+    public String postProductPage(BidDto bidDto, BindingResult bindingResult,
+                                  @PathVariable(value = "productId") String productId,
+                                  Authentication authentication, Model model){
+        System.out.println("Am primit bid value: " + bidDto.getValue() + " pentru produsul cu id-ul " + productId);
+        bidDtoValidator.validate(bidDto, bindingResult, productId);
+        if (bindingResult.hasErrors()){
+            Optional<ProductDto> optionalProductDto = productService.getProductDtoById(productId);
+            if (!optionalProductDto.isPresent()) {
+                return "errorPage";
+            }
+//            model.addAttribute("bid", bidDto);
+            model.addAttribute("product", optionalProductDto.get());
+            return "viewItem";
+        }
+        bidService.placeBid(bidDto, productId, authentication.getName());
+        return "redirect:/item/" + productId;
     }
 
     @GetMapping("/registration")
@@ -89,6 +120,17 @@ public class HomeController {
         }
         userService.add(userDto);
         return "redirect:/home";
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage(Model model){
+        return "login";
+    }
+
+    @GetMapping("/login-error")
+    public String getLoginErrorPage(Model model){
+        model.addAttribute("loginError", true);
+        return "login";
     }
 
 }

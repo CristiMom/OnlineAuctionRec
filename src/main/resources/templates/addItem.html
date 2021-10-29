@@ -48,7 +48,7 @@
         <div class="form-group">
             <label class="col-md-4 control-label" for="product_category">Product category</label>
             <div class="col-md-4">
-                <select name="color" id="product_category" th:field="*{category}">
+                <select class="form-control" name="color" id="product_category" th:field="*{category}">
                     <option th:each="colorOpt : ${T(com.sda.onlineAuction.model.Category).values()}"
                             th:value="${colorOpt.name()}" th:text="${colorOpt.name()}"></option>
                 </select>

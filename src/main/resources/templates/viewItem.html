@@ -33,14 +33,41 @@
             </div>
         </div>
         <div class="stats mt-2">
-            <div class="d-flex justify-content-between p-price"><span>Category</span><span
-                    th:text="${product.category}"></span></div>
-            <div class="d-flex justify-content-between p-price"><span>Starting price</span><span
-                    th:text="${product.startBiddingPrice}"></span></div>
-            <div class="d-flex justify-content-between p-price"><span>End bidding date and time</span><span
-                    th:text="${product.endDateTime}"></span></div>
+            <div class="d-flex justify-content-between p-price">
+                <span>Category</span>
+                <span th:text="${product.category}"></span>
+            </div>
+            <div class="d-flex justify-content-between p-price">
+                <span>Starting price</span>
+                <span th:text="${product.startBiddingPrice}"></span>
+            </div>
+
+            <div class="d-flex justify-content-between p-price">
+                <span>Curent price</span>
+                <span th:text="${product.curentBidPrice}"></span>
+            </div>
+
+            <div class="d-flex justify-content-between p-price">
+                <span>End bidding date and time</span>
+                <span th:text="${product.endDateTime}"></span>
+            </div>
+            <div class="d-flex justify-content-between p-price">
+                <form th:object="${bidDto}" method="post" th:action="@{/item/{id}(id=${product.id})}">
+                    <span>
+                    <input id="bid_value" th:field="*{value}" placeholder="Your bid"
+                           class="form-control input-md" required="" type="text">
+                    </span>
+                    <span>
+                    <button id="singlebutton" name="singlebutton" type="submit" class="btn btn-primary">Place bid</button>
+                    </span>
+                    <label th:if="${#fields.hasErrors('value')}" th:class="'error'" th:errors="*{value}" class="col-lg-4 control-label" style="color:red;" ></label>
+                </form>
+            </div>
         </div>
-        <div class="d-flex justify-content-between total font-weight-bold mt-4"><span></span><span></span>
+        <div class="d-flex justify-content-between total font-weight-bold mt-4">
+            <span>
+        </span>
+            <span></span>
         </div>
     </div>
 </div>
