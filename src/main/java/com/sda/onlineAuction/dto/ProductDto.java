@@ -17,4 +17,5 @@ public class ProductDto {
     private String endDateTime;
     private String image;
     private String curentBidPrice;
+    private String loggedUserMaxBid;
 }

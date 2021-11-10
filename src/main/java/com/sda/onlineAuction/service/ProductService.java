@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,31 +29,52 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public List<ProductDto> getAllProductDtos() {
+    public List<ProductDto> getAllProductDtos(String email) {
         List<Product> productList = productRepository.findAll();
         List<ProductDto> result = new ArrayList<>();
         for (Product product : productList) {
-            ProductDto productDto = productMapper.map(product);
+            ProductDto productDto = productMapper.map(product, email);
             result.add(productDto);
         }
         return result;
     }
 
-    public List<ProductDto> getAllProductDtosWithStream() {
-        List<Product> productList = productRepository.findAll();
-        return productList.stream()
-                .map(productMapper::map)
-                .collect(Collectors.toList());
+    public List<ProductDto> getAllActiveProductDtos(String email) {
+        List<Product> productList = productRepository.findAllByEndDateTimeAfter(LocalDateTime.now());
+        List<ProductDto> result = new ArrayList<>();
+        for (Product product : productList){
+            ProductDto productDto = productMapper.map(product, email);
+            result.add(productDto);
+        }
+        return result;
     }
 
-    public Optional<ProductDto> getProductDtoById(String productId) {
+//    public List<ProductDto> getAllProductDtosWithStream() {
+//        List<Product> productList = productRepository.findAll();
+//        return productList.stream()
+//                .map(productMapper::map)
+//                .collect(Collectors.toList());
+//    }
+
+    public Optional<ProductDto> getProductDtoById(String productId, String email) {
         Optional<Product> optionalProduct = productRepository.findById(Integer.valueOf(productId));
         if (!optionalProduct.isPresent()) {
             return Optional.empty();
         }
         Product product = optionalProduct.get();
-        ProductDto productDto = productMapper.map(product);
+        ProductDto productDto = productMapper.map(product, email);
 
         return Optional.of(productDto);
+    }
+
+
+    public List<ProductDto> getProductsDtoFor(String email) {
+        List<Product> products = productRepository.findByWinnerEmail(email);
+        List<ProductDto> result = new ArrayList<>();
+        for(Product product: products){
+            ProductDto productDto = productMapper.map(product, email);
+            result.add(productDto);
+        }
+        return result;
     }
 }

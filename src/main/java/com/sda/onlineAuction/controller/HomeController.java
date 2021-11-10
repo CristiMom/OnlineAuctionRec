@@ -65,17 +65,27 @@ public class HomeController {
     }
 
     @GetMapping({"/home", "/"})
-    public String getHomePage(Model model) {
-        List<ProductDto> productDtoList = productService.getAllProductDtos();
+    public String getHomePage(Model model, Authentication authentication) {
+        List<ProductDto> productDtoList = productService.getAllActiveProductDtos(authentication.getName());
         model.addAttribute("products", productDtoList);
         // System.out.println("Produse: " + productDtoList);
         return "home";
     }
 
+    @GetMapping("/myProducts")
+    public String getMyProductsPage(Model model, Authentication authentication) {
+        List<ProductDto> productDtoList = productService.getProductsDtoFor(authentication.getName());
+        model.addAttribute("products", productDtoList);
+        // System.out.println("Produse: " + productDtoList);
+        return "myProducts";
+    }
+
+
+
     @GetMapping("/item/{productId}")
-    public String getProductPage(@PathVariable(value = "productId") String productId, Model model) {
+    public String getProductPage(@PathVariable(value = "productId") String productId, Model model, Authentication authentication) {
         // System.out.println("We get the product id: " + productId);
-        Optional<ProductDto> optionalProductDto = productService.getProductDtoById(productId);
+        Optional<ProductDto> optionalProductDto = productService.getProductDtoById(productId, authentication.getName());
         if (!optionalProductDto.isPresent()) {
             return "errorPage";
         }
@@ -93,7 +103,7 @@ public class HomeController {
         System.out.println("Am primit bid value: " + bidDto.getValue() + " pentru produsul cu id-ul " + productId);
         bidDtoValidator.validate(bidDto, bindingResult, productId);
         if (bindingResult.hasErrors()){
-            Optional<ProductDto> optionalProductDto = productService.getProductDtoById(productId);
+            Optional<ProductDto> optionalProductDto = productService.getProductDtoById(productId, authentication.getName());
             if (!optionalProductDto.isPresent()) {
                 return "errorPage";
             }
@@ -132,5 +142,7 @@ public class HomeController {
         model.addAttribute("loginError", true);
         return "login";
     }
+
+
 
 }

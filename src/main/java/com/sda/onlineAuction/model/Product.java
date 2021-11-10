@@ -21,7 +21,9 @@ public class Product {
     private LocalDateTime endDateTime;
     @Lob
     private byte[] image;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private User winner;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", fetch = FetchType.EAGER)
     private List<Bid> bidsList;
 }

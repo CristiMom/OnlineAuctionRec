@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductMapper {
@@ -29,7 +31,7 @@ public class ProductMapper {
         return product;
     }
 
-    public ProductDto map(Product product) {
+    public ProductDto map(Product product, String email) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId().toString());
         productDto.setName(product.getName());
@@ -41,14 +43,37 @@ public class ProductMapper {
         String imageAsString = Base64.encodeBase64String(product.getImage());
         productDto.setImage(imageAsString);
 
+        Integer max = getBidMaxValue(product.getBidsList());
+        productDto.setCurentBidPrice(max.toString());
+
+        Integer loggedUserMaxValue = getLoggedUserBiggestBid(product, email);
+
+        productDto.setLoggedUserMaxBid(loggedUserMaxValue.toString());
+
+
+
+        return productDto;
+    }
+
+    private Integer getLoggedUserBiggestBid(Product product, String email) {
+        List<Bid> bidList = product.getBidsList();
+        List<Bid> loggedUserBidList = new ArrayList<>();
+        for (Bid bid: bidList){
+            if (bid.getUser().getEmail().equals(email)){
+                loggedUserBidList.add(bid);
+            }
+        }
+        Integer max = getBidMaxValue(loggedUserBidList);
+        return max;
+    }
+
+    private Integer getBidMaxValue(List<Bid> bidList) {
         Integer max = 0;
-        for (Bid bid : product.getBidsList()) {
+        for (Bid bid : bidList) {
             if (max < bid.getValue()) {
                 max = bid.getValue();
             }
         }
-        productDto.setCurentBidPrice(max.toString());
-
-        return productDto;
+        return max;
     }
 }
